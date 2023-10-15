@@ -1,4 +1,10 @@
 version: '3.3'
+
+volumes:
+  db_value:
+  static_value:
+  media_value:
+  
 services:
 
   db:
@@ -40,7 +46,3 @@ services:
       - frontend
     restart: always
 
-volumes:
-  db_value:
-  static_value:
-  media_value:
