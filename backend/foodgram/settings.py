@@ -155,4 +155,4 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     ],
 }
-CSRF_TRUSTED_ORIGINS = ['//http://158.160.30.130']
+CSRF_TRUSTED_ORIGINS = ['//http://158.160.30.130/']
