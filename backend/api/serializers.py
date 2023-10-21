@@ -1,12 +1,13 @@
-from rest_framework import serializers
+from rest_framework import serializers, status
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 
 from recipes.models import (Recipe, Ingredient,
                             Tag, IngredientRecipe,
-                            ShoppingCart, Favorite)
-from users.serializers import UserSerializer
+                            ShoppingCart, Favorite,
+                            Follow)
+from users.models import User
 
 
 class FavoriteSerializer(serializers.ModelSerializer):
@@ -54,15 +55,15 @@ class IngredientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ingredient
         fields = ('id', 'name', 'measurement_unit')
-        read_only_fields = '__all__',
+        read_only_fields = ('id', 'name', 'measurement_unit')
 
 
 class TagSerializer(serializers.ModelSerializer):
     """Сериализатор для модели Tag."""
     class Meta:
         model = Tag
-        fields = ('id', 'name', 'color', 'slug')
-        read_only_fields = '__all__',
+        fields = ('id', 'name', 'measurement_unit')
+        read_only_fields = ('id', 'name', 'measurement_unit')
 
 
 class IngredientRecipeSerializer(serializers.ModelSerializer):
@@ -77,6 +78,29 @@ class IngredientRecipeSerializer(serializers.ModelSerializer):
     class Meta:
         model = IngredientRecipe
         fields = ('id', 'name', 'measurement_unit', 'amount')
+
+
+class UserSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор для чтения / создания пользователя модели User.
+    """
+    is_subscribed = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ('email', 'id', 'username', 'first_name',
+                  'last_name', 'password', 'is_subscribed')
+        extra_kwargs = {'password': {'write_only': True},
+                        'is_subscribed': {'read_only': True}}
+
+    def get_is_subscribed(self, obj):
+        user = self.context.get('request').user
+        if not user.is_anonymous:
+            return Follow.objects.filter(user=user, author=obj).exists()
+        return False
+
+    def create(self, validated_data):
+        return User.objects.create_user(**validated_data)
 
 
 class RecipeListSerializer(serializers.ModelSerializer):
@@ -209,3 +233,54 @@ class RecipeMiniSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
         fields = ('id', 'name', 'cooking_time', 'image',)
+
+
+class FollowSerializer(serializers.ModelSerializer):
+    """Сериализатор для модели Follow."""
+    email = serializers.ReadOnlyField(source='author.email')
+    id = serializers.ReadOnlyField(source='author.id')
+    username = serializers.ReadOnlyField(source='author.username')
+    first_name = serializers.ReadOnlyField(source='author.first_name')
+    last_name = serializers.ReadOnlyField(source='author.last_name')
+    is_subscribed = serializers.SerializerMethodField()
+    recipes = serializers.SerializerMethodField()
+    recipes_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Follow
+        fields = ('email', 'id', 'username', 'first_name',
+                  'last_name', 'is_subscribed', 'recipes', 'recipes_count')
+
+    def get_is_subscribed(self, obj):
+        user = self.context.get('request').user
+        if not user.is_anonymous:
+            return Follow.objects.filter(
+                user=obj.user,
+                author=obj.author).exists()
+        return False
+
+    def get_recipes(self, obj):
+        request = self.context.get('request')
+        limit = request.GET.get('recipes_limit')
+        recipes = Recipe.objects.filter(author=obj.author)
+        if limit and limit.isdigit():
+            recipes = recipes[:int(limit)]
+        return RecipeMiniSerializer(recipes, many=True).data
+
+    def get_recipes_count(self, obj):
+        return Recipe.objects.filter(author=obj.author).count()
+
+    def validate(self, data):
+        author = self.context.get('author')
+        user = self.context.get('request').user
+        if Follow.objects.filter(
+                author=author,
+                user=user).exists():
+            raise ValidationError(
+                detail='Вы уже подписаны на этого пользователя!',
+                code=status.HTTP_400_BAD_REQUEST)
+        if user == author:
+            raise ValidationError(
+                detail='Невозможно подписаться на себя!',
+                code=status.HTTP_400_BAD_REQUEST)
+        return data
