@@ -75,7 +75,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             serializer.is_valid(raise_exception=True)
             serializer.save(author=user, recipe=recipe)
             return Response(serializer.data,
-                                status=status.HTTP_201_CREATED)
+                            status=status.HTTP_201_CREATED)
         if not Favorite.objects.filter(author=user,
                                        recipe=recipe).exists():
             return Response({'errors': 'Объект не найден'},
@@ -103,7 +103,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             serializer.is_valid(raise_exception=True)
             serializer.save(author=user, recipe=recipe)
             return Response(serializer.data,
-                                status=status.HTTP_201_CREATED)
+                            status=status.HTTP_201_CREATED)
         if not ShoppingCart.objects.filter(author=user,
                                            recipe=recipe).exists():
             return Response({'errors': 'Объект не найден'},
@@ -158,7 +158,7 @@ class UserViewSet(viewsets.ModelViewSet):
         self.request.user.set_password(serializer.data["new_password"])
         self.request.user.save()
         return Response('Пароль успешно изменен',
-                            status=status.HTTP_204_NO_CONTENT)
+                        status=status.HTTP_204_NO_CONTENT)
 
     @action(detail=True,
             methods=['post', 'delete'],
@@ -174,7 +174,7 @@ class UserViewSet(viewsets.ModelViewSet):
             serializer.is_valid(raise_exception=True)
             serializer.save(author=author, user=user)
             return Response({'Подписка успешно создана': serializer.data},
-                                status=status.HTTP_201_CREATED)
+                            status=status.HTTP_201_CREATED)
         if Follow.objects.filter(author=author, user=user).exists():
             Follow.objects.get(author=author).delete()
             return Response('Успешная отписка',
