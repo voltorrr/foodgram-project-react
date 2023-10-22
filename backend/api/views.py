@@ -2,19 +2,19 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import mixins
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import (AllowAny, IsAuthenticated,
+                                        SAFE_METHODS)
 from rest_framework.decorators import action
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.permissions import IsAuthenticated, SAFE_METHODS
 from django.shortcuts import get_object_or_404
 
 from recipes.models import (Recipe, Tag, Ingredient,
                             Favorite, ShoppingCart, User, Follow)
 from users.models import User
-from users.serializers import FollowSerializer, UserSerializer
 from api.serializers import (RecipeListSerializer, TagSerializer,
                              IngredientSerializer, FavoriteSerializer,
-                             ShoppingCartSerializer, RecipeWriteSerializer)
+                             ShoppingCartSerializer, RecipeWriteSerializer,
+                             FollowSerializer, UserSerializer)
 from api.services import shopping_cart
 from api.permissions import (IsOwnerOrAdminOrReadOnly,
                              IsCurrentUserOrAdminOrReadOnly)
