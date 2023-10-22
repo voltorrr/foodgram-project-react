@@ -10,7 +10,6 @@ from django.shortcuts import get_object_or_404
 
 from recipes.models import (Recipe, Tag, Ingredient,
                             Favorite, ShoppingCart, User, Follow)
-from users.models import User
 from api.serializers import (RecipeListSerializer, TagSerializer,
                              IngredientSerializer, FavoriteSerializer,
                              ShoppingCartSerializer, RecipeWriteSerializer,
