@@ -20,7 +20,9 @@ ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
     'backend',
-    'db'
+    'db',
+    '158.160.30.130',
+    '*'
 ]
 
 
@@ -143,5 +145,5 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     ],
 }
-CSRF_TRUSTED_ORIGINS = ['//http://158.160.30.130/']
+CSRF_TRUSTED_ORIGINS = ['http://158.160.30.130/']
 PAGE_SIZE = 6
