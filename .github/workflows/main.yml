@@ -61,7 +61,7 @@ jobs:
         with:
           context: ./frontend/
           push: true
-          tags: voltorrr/foodgram-frontendt:latest
+          tags: voltorrr/foodgram-frontend:latest
 
   deploy:
     runs-on: ubuntu-latest
