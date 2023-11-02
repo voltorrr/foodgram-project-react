@@ -21,7 +21,7 @@ def shopping_cart(self, request, author):
             f'{ingredient["amounts"]} '
             f'{ingredient["ingredient__measurement_unit"]}\n'
         )
-    shopping_list += '\n\nFoodgram (2022)'
+    shopping_list += '\n\nFoodgram (2023)'
     filename = 'shopping_list.txt'
     response = HttpResponse(shopping_list, content_type='text/plain')
     response['Content-Disposition'] = f'attachment; filename={filename}'

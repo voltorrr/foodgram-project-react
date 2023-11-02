@@ -62,8 +62,8 @@ class TagSerializer(serializers.ModelSerializer):
     """Сериализатор для модели Tag."""
     class Meta:
         model = Tag
-        fields = ('id', 'name', 'measurement_unit')
-        read_only_fields = ('id', 'name', 'measurement_unit')
+        fields = ('id', 'name', 'color')
+        read_only_fields = ('id', 'name', 'color')
 
 
 class IngredientRecipeSerializer(serializers.ModelSerializer):
